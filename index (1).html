@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Almentor QA Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="#E31E24"/>
+            <path d="M18 6L30 28H6L18 6Z" fill="white"/>
+          </svg>
+          <span class="brand-name">almentor</span>
+        </div>
+        <div class="brand-divider"></div>
+        <span class="brand-subtitle">QA Operations Dashboard</span>
+      </div>
+      <div class="header-status">
+        <div class="sync-indicator" id="syncIndicator">
+          <span class="sync-dot"></span>
+          <span class="sync-label" id="syncLabel">Live</span>
+        </div>
+        <div class="last-updated" id="lastUpdated">Initializing…</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- TAB NAVIGATION -->
+  <nav class="tab-nav">
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" data-tab="projects" onclick="switchTab('projects')">
+        <span class="tab-icon">📊</span> Projects Tracker
+      </button>
+      <button class="tab-btn" data-tab="b2c" onclick="switchTab('b2c')">
+        <span class="tab-icon">🎓</span> 460 AI Courses
+      </button>
+      <div class="tab-underline" id="tabUnderline"></div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- OVERVIEW CARDS -->
+    <section class="overview-section" id="overviewSection">
+      <div class="cards-grid">
+        <div class="card card--primary" id="cardTotal">
+          <div class="card-label">Total Comments</div>
+          <div class="card-value" id="valTotal">—</div>
+          <div class="card-sub" id="subTotal">Across all teams</div>
+        </div>
+        <div class="card card--critical" id="cardCrit">
+          <div class="card-label">Critical Errors</div>
+          <div class="card-value" id="valCrit">—</div>
+          <div class="card-sub" id="subCrit">High priority fixes</div>
+        </div>
+        <div class="card card--minor" id="cardMin">
+          <div class="card-label">Minor Errors</div>
+          <div class="card-value" id="valMin">—</div>
+          <div class="card-sub" id="subMin">Low priority fixes</div>
+        </div>
+        <div class="card card--quality" id="cardQuality">
+          <div class="card-label">Quality Rate</div>
+          <div class="card-value" id="valQuality">—</div>
+          <div class="card-sub" id="subQuality">Overall score</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM SPOTLIGHT -->
+    <section class="spotlight-section" id="spotlightSection">
+      <div class="spotlight-grid">
+        <div class="spotlight-card spotlight--best">
+          <div class="spotlight-badge">🏆 Best Team</div>
+          <div class="spotlight-name" id="bestTeam">—</div>
+          <div class="spotlight-stat" id="bestStat">—</div>
+        </div>
+        <div class="spotlight-card spotlight--worst">
+          <div class="spotlight-badge">⚠️ Needs Attention</div>
+          <div class="spotlight-name" id="worstTeam">—</div>
+          <div class="spotlight-stat" id="worstStat">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW -->
+    <section class="charts-section">
+      <div class="charts-grid">
+        <div class="chart-card" id="barChartCard">
+          <div class="chart-header">
+            <span class="chart-title">Errors by Team / Department</span>
+            <span class="chart-badge">Bar</span>
+          </div>
+          <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+        </div>
+        <div class="chart-card chart-card--sm" id="pieChartCard">
+          <div class="chart-header">
+            <span class="chart-title">Critical vs Minor</span>
+            <span class="chart-badge">Donut</span>
+          </div>
+          <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+        </div>
+        <div class="chart-card" id="stackedChartCard">
+          <div class="chart-header">
+            <span class="chart-title">Per-Team Breakdown</span>
+            <span class="chart-badge">Stacked</span>
+          </div>
+          <div class="chart-wrap"><canvas id="stackedChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSIGHTS & RECOMMENDATIONS -->
+    <section class="insights-section">
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-header"><span>💡</span> Auto-Generated Insights</div>
+          <ul class="insight-list" id="insightsList">
+            <li class="insight-placeholder">Loading data…</li>
+          </ul>
+        </div>
+        <div class="insight-card">
+          <div class="insight-header"><span>🎯</span> Recommendations</div>
+          <ul class="insight-list" id="recList">
+            <li class="insight-placeholder">Loading data…</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA TABLE -->
+    <section class="table-section">
+      <div class="table-header-row">
+        <h2 class="table-title">Detailed Data</h2>
+        <div class="table-controls">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search projects, teams…" oninput="filterTable()" />
+          <select class="filter-select" id="filterCol" onchange="filterTable()">
+            <option value="">All columns</option>
+          </select>
+          <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="dataTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">No records found.</div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>Almentor QA Dashboard — Built for GitHub Pages</span>
+    <span id="footerRefresh">Auto-refresh every 30s</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
