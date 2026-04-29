@@ -8,8 +8,8 @@ const CONFIG = {
   // Replace these URLs with your published Google Sheets CSV links.
   // Go to: File → Share → Publish to web → Choose sheet → CSV → Copy link
   SHEETS: {
-    projects: 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv&gid=PROJECTS_GID',
-    b2c:      'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv&gid=B2C_GID',
+    projects: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTzkpvNPk3uixskvJIghPuoKOt13uu2aTOMo8kD7tNyzwVmhyu0F86mEq7u2q9bw/pub?gid=90567248&single=true&output=csv',
+    b2c:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTzkpvNPk3uixskvJIghPuoKOt13uu2aTOMo8kD7tNyzwVmhyu0F86mEq7u2q9bw/pub?gid=1364106034&single=true&output=csv',
   },
   REFRESH_INTERVAL: 30000, // 30 seconds
   ROWS_PER_PAGE: 20,
